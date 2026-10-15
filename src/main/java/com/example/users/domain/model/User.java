@@ -1,23 +1,23 @@
 package com.example.users.domain.model;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
-public class UserModel {
+public class User {
     private Long id;
     private String name;
     private String lastName;
     private String identityDocument;
     private String phoneNumber;
-    private LocalDateTime birthDate;
+    private LocalDate birthDate;
     private String email;
     private String password;
-    private RoleModel role;
+    private Role role;
 
-    public UserModel(){
+    public User(){
 
     }
 
-    public UserModel(Long id, String name, String lastName, String identityDocument, String phoneNumber, LocalDateTime birthDate, String email, String password, RoleModel role) {
+    public User(Long id, String name, String lastName, String identityDocument, String phoneNumber, LocalDate birthDate, String email, String password, Role role) {
         this.id = id;
         this.name = name;
         this.lastName = lastName;
@@ -69,11 +69,11 @@ public class UserModel {
         this.phoneNumber = phoneNumber;
     }
 
-    public LocalDateTime getBirthDate() {
+    public LocalDate getBirthDate() {
         return birthDate;
     }
 
-    public void setBirthDate(LocalDateTime birthDate) {
+    public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
     }
 
@@ -93,11 +93,11 @@ public class UserModel {
         this.password = password;
     }
 
-    public RoleModel getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(RoleModel role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 }
