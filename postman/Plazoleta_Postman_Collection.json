@@ -1,0 +1,304 @@
+﻿{
+  "info": {
+    "name": "Plazoleta de Comidas - Microservicios",
+    "description": "Colección integral de pruebas para las 18 Historias de Usuario (HU-1 a HU-18) del Reto Plazoleta de Comidas.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "HOST_USERS",
+      "value": "http://localhost:8081",
+      "type": "string"
+    },
+    {
+      "key": "HOST_PLAZOLETA",
+      "value": "http://localhost:8082",
+      "type": "string"
+    },
+    {
+      "key": "HOST_MENSAJERIA",
+      "value": "http://localhost:8083",
+      "type": "string"
+    },
+    {
+      "key": "HOST_TRAZABILIDAD",
+      "value": "http://localhost:8084",
+      "type": "string"
+    },
+    {
+      "key": "TOKEN_ADMIN",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "TOKEN_OWNER",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "TOKEN_EMPLOYEE",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "TOKEN_CLIENT",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Semana 1",
+      "item": [
+        {
+          "name": "HU-1: Crear Propietario (Admin)",
+          "item": [
+            {
+              "name": "1.1 Crear Propietario - Exitoso (201 Created)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Código de respuesta debe ser 201 Created', function () {",
+                      "    pm.response.to.have.status(201);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Valentina\",\n  \"lastName\": \"Pinto\",\n  \"identityDocument\": \"1002345678\",\n  \"phoneNumber\": \"+573001234567\",\n  \"birthDate\": \"1998-05-15\",\n  \"email\": \"valentina.owner@correo.com\",\n  \"password\": \"PasswordSeguro123\"\n}"
+                },
+                "url": {
+                  "raw": "{{HOST_USERS}}/users/owner",
+                  "host": ["{{HOST_USERS}}"],
+                  "path": ["users", "owner"]
+                }
+              }
+            },
+            {
+              "name": "1.2 Error - Menor de edad (400 Bad Request)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Debe responder 400 Bad Request cuando el usuario es menor de edad', function () {",
+                      "    pm.response.to.have.status(400);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Carlos\",\n  \"lastName\": \"Menor\",\n  \"identityDocument\": \"1098765432\",\n  \"phoneNumber\": \"+573109876543\",\n  \"birthDate\": \"2012-08-20\",\n  \"email\": \"carlos.menor@correo.com\",\n  \"password\": \"Clave123\"\n}"
+                },
+                "url": {
+                  "raw": "{{HOST_USERS}}/users/owner",
+                  "host": ["{{HOST_USERS}}"],
+                  "path": ["users", "owner"]
+                }
+              }
+            },
+            {
+              "name": "1.3 Error - Correo con formato inválido (400 Bad Request)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Debe responder 400 Bad Request por formato de correo inválido', function () {",
+                      "    pm.response.to.have.status(400);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Andrea\",\n  \"lastName\": \"Gomez\",\n  \"identityDocument\": \"1001112223\",\n  \"phoneNumber\": \"+573201112233\",\n  \"birthDate\": \"1995-02-10\",\n  \"email\": \"correo-sin-formato-valido\",\n  \"password\": \"Clave123\"\n}"
+                },
+                "url": {
+                  "raw": "{{HOST_USERS}}/users/owner",
+                  "host": ["{{HOST_USERS}}"],
+                  "path": ["users", "owner"]
+                }
+              }
+            },
+            {
+              "name": "1.4 Error - Teléfono mayor a 13 caracteres (400 Bad Request)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Debe responder 400 Bad Request si el teléfono supera 13 caracteres', function () {",
+                      "    pm.response.to.have.status(400);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Felipe\",\n  \"lastName\": \"Torres\",\n  \"identityDocument\": \"1004445556\",\n  \"phoneNumber\": \"+5730012345678999\",\n  \"birthDate\": \"1990-11-25\",\n  \"email\": \"felipe@correo.com\",\n  \"password\": \"Clave123\"\n}"
+                },
+                "url": {
+                  "raw": "{{HOST_USERS}}/users/owner",
+                  "host": ["{{HOST_USERS}}"],
+                  "path": ["users", "owner"]
+                }
+              }
+            },
+            {
+              "name": "1.5 Error - Documento no numérico (400 Bad Request)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Debe responder 400 Bad Request cuando el documento contiene letras', function () {",
+                      "    pm.response.to.have.status(400);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Diana\",\n  \"lastName\": \"Lopez\",\n  \"identityDocument\": \"100234ABC\",\n  \"phoneNumber\": \"+573009998877\",\n  \"birthDate\": \"1992-04-18\",\n  \"email\": \"diana@correo.com\",\n  \"password\": \"Clave123\"\n}"
+                },
+                "url": {
+                  "raw": "{{HOST_USERS}}/users/owner",
+                  "host": ["{{HOST_USERS}}"],
+                  "path": ["users", "owner"]
+                }
+              }
+            },
+            {
+              "name": "1.6 Error - Campos obligatorios vacíos (400 Bad Request)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test('Debe responder 400 Bad Request por campos obligatorios vacíos', function () {",
+                      "    pm.response.to.have.status(400);",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"\",\n  \"lastName\": \"\",\n  \"identityDocument\": \"\",\n  \"phoneNumber\": \"\",\n  \"birthDate\": null,\n  \"email\": \"\",\n  \"password\": \"\"\n}"
+                },
+                "url": {
+                  "raw": "{{HOST_USERS}}/users/owner",
+                  "host": ["{{HOST_USERS}}"],
+                  "path": ["users", "owner"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-2: Crear Restaurante (Admin)",
+          "item": []
+        },
+        {
+          "name": "HU-3: Crear Plato (Propietario)",
+          "item": []
+        },
+        {
+          "name": "HU-4: Modificar Plato (Propietario)",
+          "item": []
+        },
+        {
+          "name": "HU-5: Agregar Autenticacion al Sistema (JWT)",
+          "item": []
+        }
+      ]
+    },
+    {
+      "name": "Semana 2",
+      "item": [
+        { "name": "HU-6: Crear cuenta empleado (Propietario)", "item": [] },
+        { "name": "HU-7: Habilitar o Deshabilitar Plato (Propietario)", "item": [] },
+        { "name": "HU-8: Crear cuenta Cliente (Cliente)", "item": [] },
+        { "name": "HU-9: Listar Restaurantes Paginado (Cliente)", "item": [] },
+        { "name": "HU-10: Listar Platos de Restaurante Paginado (Cliente)", "item": [] },
+        { "name": "HU-11: Realizar Pedido (Cliente)", "item": [] },
+        { "name": "HU-12: Listar Pedidos por Estado Paginado (Empleado)", "item": [] }
+      ]
+    },
+    {
+      "name": "Semana 3",
+      "item": [
+        { "name": "HU-13: Asignarse a Pedido (Empleado)", "item": [] },
+        { "name": "HU-14: Notificar Pedido Listo con PIN SMS (Empleado)", "item": [] },
+        { "name": "HU-15: Entregar Pedido con PIN (Empleado)", "item": [] },
+        { "name": "HU-16: Cancelar Pedido (Cliente)", "item": [] },
+        { "name": "HU-17: Consultar Trazabilidad de Pedidos (Cliente)", "item": [] },
+        { "name": "HU-18: Consultar Eficiencia de Pedidos (Propietario)", "item": [] }
+      ]
+    }
+  ]
+}

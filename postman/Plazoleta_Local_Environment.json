@@ -1,0 +1,55 @@
+﻿{
+  "id": "plazoleta-local-env",
+  "name": "Plazoleta - Local",
+  "values": [
+    {
+      "key": "HOST_USERS",
+      "value": "http://localhost:8081",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "HOST_PLAZOLETA",
+      "value": "http://localhost:8082",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "HOST_MENSAJERIA",
+      "value": "http://localhost:8083",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "HOST_TRAZABILIDAD",
+      "value": "http://localhost:8084",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "TOKEN_ADMIN",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "TOKEN_OWNER",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "TOKEN_EMPLOYEE",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "TOKEN_CLIENT",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}
