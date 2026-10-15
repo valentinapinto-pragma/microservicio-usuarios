@@ -1,9 +1,6 @@
 package com.example.users.infrastructure.persistence.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,7 +12,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

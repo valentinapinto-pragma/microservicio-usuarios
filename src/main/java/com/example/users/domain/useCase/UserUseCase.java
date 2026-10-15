@@ -9,8 +9,6 @@ import com.example.users.domain.servicePort.UserServicePort;
 import java.time.LocalDate;
 import java.time.Period;
 
-import java.time.LocalDate;
-
 public class UserUseCase implements UserServicePort {
     // identificador 1=Admin, 2=Propietario, 3=Empleado, 4=Cliente
     private static final Long OWNER_ROLE_ID = 2L;
