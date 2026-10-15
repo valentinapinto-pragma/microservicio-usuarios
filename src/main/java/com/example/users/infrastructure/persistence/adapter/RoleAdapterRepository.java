@@ -27,6 +27,7 @@ public class RoleAdapterRepository implements RolePersistentPort {
 
     @Override
     public Role save(Role entity) {
+
         return mapperRoleEntity.AToB(roleRepository.save(mapperRoleEntity.BToA(entity)));
     }
 
