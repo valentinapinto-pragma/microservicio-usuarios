@@ -1,12 +1,16 @@
 package com.example.users.application.handler;
 
 import com.example.users.application.dto.request.UserRequestDto;
+import com.example.users.application.dto.response.UserResponseDto;
 import com.example.users.application.mapper.UserDtoMapper;
 import com.example.users.domain.model.User;
 import com.example.users.domain.servicePort.UserServicePort;
+import com.example.users.infrastructure.persistence.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,4 +24,9 @@ public class UserHandler {
         User user = userDtoMapper.toUser(userRequestDto);
         userServicePort.createOwner(user);
     }
+    public UserResponseDto getUserById(Long id) {
+        return userDtoMapper.toResponseDto(userServicePort.getUserById(id));
+    }
+
+
 }

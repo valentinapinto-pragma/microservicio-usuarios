@@ -1,5 +1,6 @@
 package com.example.users.domain.useCase;
 
+import com.example.users.domain.exception.UserNotFoundException;
 import com.example.users.domain.exception.UserUnderAgeException;
 import com.example.users.domain.model.Role;
 import com.example.users.domain.model.User;
@@ -38,6 +39,12 @@ public class UserUseCase implements UserServicePort {
         if (birthDate == null || Period.between(birthDate, LocalDate.now()).getYears() < 18) {
             throw new UserUnderAgeException();
         }
+    }
+
+    @Override
+    public User getUserById(Long id) {
+        return userPersistentPort.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
     }
 
 

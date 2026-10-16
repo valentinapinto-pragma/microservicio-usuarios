@@ -1,6 +1,7 @@
 package com.example.users.application.mapper;
 
 import com.example.users.application.dto.request.UserRequestDto;
+import com.example.users.application.dto.response.UserResponseDto;
 import com.example.users.domain.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
@@ -11,4 +12,6 @@ import org.mapstruct.ReportingPolicy;
 public interface UserDtoMapper {
 
     User toUser(UserRequestDto userRequestDto);
+    UserResponseDto toResponseDto(User user);
+
 }
