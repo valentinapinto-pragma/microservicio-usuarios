@@ -25,6 +25,7 @@ public class UserController {
             @ApiResponse(responseCode = "201", description = "Propietario creado exitosamente"),
             @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos o usuario menor de edad")
     })
+
     @PostMapping("/owner")
     public ResponseEntity<Void> createOwner(@Valid @RequestBody UserRequestDto userRequestDto) {
         userHandler.createOwner(userRequestDto);

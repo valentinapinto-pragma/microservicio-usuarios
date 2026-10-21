@@ -1,4 +1,4 @@
-package com.example.users.config;
+package com.example.users.infrastructure.config;
 
 import com.example.users.domain.repositoryPort.PasswordEncoderPort;
 import com.example.users.domain.repositoryPort.TokenServicePort;
@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class Config {
+public class BeanConfiguration {
 
     @Bean
     public UserServicePort userServicePort(UserPersistentPort userRepository, PasswordEncoderPort passwordEncoderPort) {
@@ -27,9 +27,10 @@ public class Config {
                 .info(new Info()
                         .title("Microservicio de Usuarios - Plazoleta de Comidas")
                         .version("1.0.0")
-                        .description("API REST para la gestión de usuarios, roles y autenticación.")
+                        .description("API REST para la gestion de usuarios, roles y autenticacion.")
                         .license(new License().name("Apache 2.0").url("http://springdoc.org")));
     }
+
     @Bean
     public AuthServicePort authServicePort(UserPersistentPort userPersistentPort,
                                            PasswordEncoderPort passwordEncoderPort,
