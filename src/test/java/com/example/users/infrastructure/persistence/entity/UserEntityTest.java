@@ -13,11 +13,11 @@ class UserEntityTest {
     @Test
     @DisplayName("Debe construir la entidad correctamente con el Builder y Setters")
     void userEntity_ShouldSetAndGetFieldsCorrectly() {
-        RoleEntity role = RoleEntity.builder()
-                .id(2L)
-                .name("ROLE_OWNER")
-                .description("Propietario")
-                .build();
+        RoleEntity role = new RoleEntity();
+        role.setId(2L);
+        role.setName("ROLE_OWNER");
+        role.setDescription("Propietario");
+
 
         LocalDate birthDate = LocalDate.of(1995, 5, 20);
 

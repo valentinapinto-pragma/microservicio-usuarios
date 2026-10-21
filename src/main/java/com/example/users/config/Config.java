@@ -1,8 +1,11 @@
 package com.example.users.config;
 
 import com.example.users.domain.repositoryPort.PasswordEncoderPort;
+import com.example.users.domain.repositoryPort.TokenServicePort;
 import com.example.users.domain.repositoryPort.UserPersistentPort;
+import com.example.users.domain.servicePort.AuthServicePort;
 import com.example.users.domain.servicePort.UserServicePort;
+import com.example.users.domain.useCase.AuthUseCase;
 import com.example.users.domain.useCase.UserUseCase;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -26,5 +29,11 @@ public class Config {
                         .version("1.0.0")
                         .description("API REST para la gestión de usuarios, roles y autenticación.")
                         .license(new License().name("Apache 2.0").url("http://springdoc.org")));
+    }
+    @Bean
+    public AuthServicePort authServicePort(UserPersistentPort userPersistentPort,
+                                           PasswordEncoderPort passwordEncoderPort,
+                                           TokenServicePort tokenServicePort) {
+        return new AuthUseCase(userPersistentPort, passwordEncoderPort, tokenServicePort);
     }
 }

@@ -11,8 +11,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -53,4 +54,23 @@ class UserAdapterRepositoryTest {
         verify(userRepository).save(userEntity);
         verify(mapperUserEntity).toUser(userEntity);
     }
+    @Test
+    @DisplayName("Debe buscar usuario por email correctamente")
+    void findByEmail_ShouldReturnUser() {
+        String email = "valentina@correo.com";
+        User user = new User();
+        user.setEmail(email);
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setEmail(email);
+
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(userEntity));
+        when(mapperUserEntity.toUser(userEntity)).thenReturn(user);
+
+        Optional<User> result = userAdapterRepository.findByEmail(email);
+
+        assertTrue(result.isPresent());
+        assertEquals(email, result.get().getEmail());
+    }
+
 }

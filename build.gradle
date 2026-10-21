@@ -29,19 +29,26 @@ dependencies {
 	runtimeOnly 'mysql:mysql-connector-java:8.0.32'
 	//runtimeOnly 'com.h2database:h2'//http://localhost:8080/h2-console
 
-	// Encriptación para la contraseña (BCrypt)
+	// Encriptacion para la contrasena (BCrypt)
 	implementation 'org.springframework.security:spring-security-crypto'
 
-	// Lombok
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
+	// JWT (JSON Web Token)
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+	// Lombok compatible con Java 21
+	compileOnly 'org.projectlombok:lombok:1.18.32'
+	annotationProcessor 'org.projectlombok:lombok:1.18.32'
+	testCompileOnly 'org.projectlombok:lombok:1.18.32'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.32'
 
 	// MapStruct y su enlace con Lombok
-	implementation 'org.mapstruct:mapstruct:1.5.2.Final'
-	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.2.Final'
+	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 
-	// Documentación Swagger / OpenAPI
+	// Documentacion Swagger / OpenAPI
 	implementation 'org.springdoc:springdoc-openapi-ui:1.6.9'
 
 	// Pruebas

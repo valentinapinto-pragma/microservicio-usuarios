@@ -4,9 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class BcryptAdapterTest {
 
@@ -28,4 +26,14 @@ class BcryptAdapterTest {
         assertTrue(encodedPassword.startsWith("$2a$"));
         assertTrue(passwordEncoder.matches(rawPassword, encodedPassword)); // Valida que BCrypt la reconozca
     }
+    @Test
+    @DisplayName("Debe verificar si la contraseña coincide con el hash")
+    void matches_ShouldVerifyPasswordCorrectly() {
+        String rawPassword = "PasswordSeguro123";
+        String encodedPassword = bcryptAdapter.encode(rawPassword);
+
+        assertTrue(bcryptAdapter.matches(rawPassword, encodedPassword));
+        assertFalse(bcryptAdapter.matches("ClaveEquivocada", encodedPassword));
+    }
+
 }
