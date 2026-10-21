@@ -1,6 +1,7 @@
 package com.example.users.application.handler;
 
 import com.example.users.application.dto.request.UserRequestDto;
+import com.example.users.application.dto.response.UserResponseDto;
 import com.example.users.application.mapper.UserDtoMapper;
 import com.example.users.domain.model.User;
 import com.example.users.domain.servicePort.UserServicePort;
@@ -11,6 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -46,5 +49,32 @@ class UserHandlerTest {
         // Assert
         verify(userDtoMapper).toUser(requestDto);
         verify(userServicePort).createOwner(user);
+    }
+
+    @Test
+    @DisplayName("Debe consultar el usuario por id y mapearlo a UserResponseDto")
+    void getUserById_ShouldCallServicePortAndReturnResponseDto() {
+        // Arrange
+        Long userId = 1L;
+        User user = new User();
+        user.setId(userId);
+        user.setName("Valentina");
+
+        UserResponseDto responseDto = new UserResponseDto();
+        responseDto.setId(userId);
+        responseDto.setName("Valentina");
+
+        when(userServicePort.getUserById(userId)).thenReturn(user);
+        when(userDtoMapper.toResponseDto(user)).thenReturn(responseDto);
+
+        // Act
+        UserResponseDto result = userHandler.getUserById(userId);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(userId, result.getId());
+        assertEquals("Valentina", result.getName());
+        verify(userServicePort).getUserById(userId);
+        verify(userDtoMapper).toResponseDto(user);
     }
 }

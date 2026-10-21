@@ -1,7 +1,9 @@
 package com.example.users.infrastructure.controller;
 
 import com.example.users.application.dto.request.UserRequestDto;
+import com.example.users.application.dto.response.UserResponseDto;
 import com.example.users.application.handler.UserHandler;
+import com.example.users.domain.exception.UserNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,7 +19,10 @@ import java.time.LocalDate;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserController.class)
@@ -73,7 +78,7 @@ class UserControllerTest {
     @Test
     @DisplayName("Debe responder 400 Bad Request cuando el documento de identidad no es numérico")
     void createOwner_WhenIdentityDocumentIsNotNumeric_ShouldReturn400BadRequest() throws Exception {
-        validDto.setIdentityDocument("100234ABC"); // Contiene letras
+        validDto.setIdentityDocument("100234ABC");
 
         mockMvc.perform(post("/users/owner")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -86,7 +91,7 @@ class UserControllerTest {
     @Test
     @DisplayName("Debe responder 400 Bad Request cuando el teléfono supera 13 caracteres")
     void createOwner_WhenPhoneIsTooLong_ShouldReturn400BadRequest() throws Exception {
-        validDto.setPhoneNumber("+5730012345678999"); // Más de 13 caracteres
+        validDto.setPhoneNumber("+5730012345678999");
 
         mockMvc.perform(post("/users/owner")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -94,5 +99,38 @@ class UserControllerTest {
                 .andExpect(status().isBadRequest());
 
         verify(userHandler, never()).createOwner(any());
+    }
+
+    @Test
+    @DisplayName("Debe responder 200 OK con UserResponseDto cuando se consulta por ID")
+    void getUserById_WhenUserExists_ShouldReturn200Ok() throws Exception {
+        UserResponseDto responseDto = new UserResponseDto();
+        responseDto.setId(1L);
+        responseDto.setName("Valentina");
+        responseDto.setEmail("valentina@correo.com");
+
+        when(userHandler.getUserById(1L)).thenReturn(responseDto);
+
+        mockMvc.perform(get("/users/1")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.name").value("Valentina"))
+                .andExpect(jsonPath("$.email").value("valentina@correo.com"));
+
+        verify(userHandler).getUserById(1L);
+    }
+
+    @Test
+    @DisplayName("Debe responder 404 Not Found cuando el usuario no existe")
+    void getUserById_WhenUserNotFound_ShouldReturn404NotFound() throws Exception {
+        when(userHandler.getUserById(99L)).thenThrow(new UserNotFoundException("User not found with id: 99"));
+
+        mockMvc.perform(get("/users/99")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("User not found with id: 99"));
+
+        verify(userHandler).getUserById(99L);
     }
 }

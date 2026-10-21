@@ -1,5 +1,6 @@
 package com.example.users.domain.useCase;
 
+import com.example.users.domain.exception.UserNotFoundException;
 import com.example.users.domain.exception.UserUnderAgeException;
 import com.example.users.domain.model.User;
 import com.example.users.domain.repositoryPort.PasswordEncoderPort;
@@ -13,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -88,5 +90,14 @@ class UserUseCaseTest {
         // Act & Assert
         assertThrows(UserUnderAgeException.class, () -> userUseCase.createOwner(user));
         verify(userPersistentPort, never()).save(any());
+    }
+    @Test
+    @DisplayName("Debe lanzar UserNotFoundException cuando el id no existe")
+    void getUserById_WhenUserDoesNotExist_ShouldThrowException() {
+        // Arrange
+        when(userPersistentPort.findById(99L)).thenReturn(Optional.empty());
+        // Act & Assert
+        assertThrows(UserNotFoundException.class, () -> userUseCase.getUserById(99L));
+        verify(userPersistentPort).findById(99L);
     }
 }
