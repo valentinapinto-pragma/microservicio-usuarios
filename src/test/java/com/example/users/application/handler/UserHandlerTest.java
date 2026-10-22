@@ -30,9 +30,8 @@ class UserHandlerTest {
     private UserHandler userHandler;
 
     @Test
-    @DisplayName("Debe mapear el DTO a Modelo y llamar al puerto de servicio")
+    @DisplayName("Debe mapear el DTO a Modelo y llamar al puerto de servicio para Owner")
     void createOwner_ShouldMapDtoAndCallServicePort() {
-        // Arrange
         UserRequestDto requestDto = new UserRequestDto();
         requestDto.setName("Valentina");
         requestDto.setEmail("test@correo.com");
@@ -43,18 +42,34 @@ class UserHandlerTest {
 
         when(userDtoMapper.toUser(requestDto)).thenReturn(user);
 
-        // Act
         userHandler.createOwner(requestDto);
 
-        // Assert
         verify(userDtoMapper).toUser(requestDto);
         verify(userServicePort).createOwner(user);
     }
 
     @Test
+    @DisplayName("Debe mapear el DTO a Modelo y llamar a createEmployee en el puerto de servicio")
+    void createEmployee_ShouldMapDtoAndCallServicePort() {
+        UserRequestDto requestDto = new UserRequestDto();
+        requestDto.setName("Carlos");
+        requestDto.setEmail("carlos.empleado@correo.com");
+
+        User user = new User();
+        user.setName("Carlos");
+        user.setEmail("carlos.empleado@correo.com");
+
+        when(userDtoMapper.toUser(requestDto)).thenReturn(user);
+
+        userHandler.createEmployee(requestDto);
+
+        verify(userDtoMapper).toUser(requestDto);
+        verify(userServicePort).createEmployee(user);
+    }
+
+    @Test
     @DisplayName("Debe consultar el usuario por id y mapearlo a UserResponseDto")
     void getUserById_ShouldCallServicePortAndReturnResponseDto() {
-        // Arrange
         Long userId = 1L;
         User user = new User();
         user.setId(userId);
@@ -67,10 +82,8 @@ class UserHandlerTest {
         when(userServicePort.getUserById(userId)).thenReturn(user);
         when(userDtoMapper.toResponseDto(user)).thenReturn(responseDto);
 
-        // Act
         UserResponseDto result = userHandler.getUserById(userId);
 
-        // Assert
         assertNotNull(result);
         assertEquals(userId, result.getId());
         assertEquals("Valentina", result.getName());

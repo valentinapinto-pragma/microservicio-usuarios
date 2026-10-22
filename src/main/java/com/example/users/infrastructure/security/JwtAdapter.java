@@ -2,6 +2,7 @@ package com.example.users.infrastructure.security;
 
 import com.example.users.domain.model.User;
 import com.example.users.domain.repositoryPort.TokenServicePort;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,5 +43,18 @@ public class JwtAdapter implements TokenServicePort {
                 .setExpiration(new Date(currentTimeMillis + expiration))
                 .signWith(key)
                 .compact();
+    }
+
+    public String extractRole(String token) {
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        Key key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get("role", String.class);
     }
 }

@@ -56,6 +56,44 @@ class JwtAdapterTest {
     }
 
     @Test
+    @DisplayName("Debe extraer el rol correctamente desde un token con prefijo Bearer")
+    void extractRole_WhenBearerToken_ShouldReturnRole() {
+        Role role = new Role();
+        role.setId(2L);
+        role.setName("ROLE_OWNER");
+
+        User user = new User();
+        user.setId(10L);
+        user.setEmail("valentina@correo.com");
+        user.setRole(role);
+
+        String token = jwtAdapter.generateToken(user);
+
+        String extractedRole = jwtAdapter.extractRole("Bearer " + token);
+
+        assertEquals("ROLE_OWNER", extractedRole);
+    }
+
+    @Test
+    @DisplayName("Debe extraer el rol correctamente desde un token sin prefijo Bearer")
+    void extractRole_WhenPlainToken_ShouldReturnRole() {
+        Role role = new Role();
+        role.setId(3L);
+        role.setName("ROLE_EMPLOYEE");
+
+        User user = new User();
+        user.setId(15L);
+        user.setEmail("empleado@correo.com");
+        user.setRole(role);
+
+        String token = jwtAdapter.generateToken(user);
+
+        String extractedRole = jwtAdapter.extractRole(token);
+
+        assertEquals("ROLE_EMPLOYEE", extractedRole);
+    }
+
+    @Test
     @DisplayName("Debe generar token con rol vacío si es nulo")
     void generateToken_WhenRoleIsNull_ShouldWork() {
         User user = new User();

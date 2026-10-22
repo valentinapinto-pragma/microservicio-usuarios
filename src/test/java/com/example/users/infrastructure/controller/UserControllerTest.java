@@ -4,6 +4,7 @@ import com.example.users.application.dto.request.UserRequestDto;
 import com.example.users.application.dto.response.UserResponseDto;
 import com.example.users.application.handler.UserHandler;
 import com.example.users.domain.exception.UserNotFoundException;
+import com.example.users.infrastructure.security.JwtAdapter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -37,6 +39,9 @@ class UserControllerTest {
     @MockBean
     private UserHandler userHandler;
 
+    @MockBean
+    private JwtAdapter jwtAdapter;
+
     private UserRequestDto validDto;
 
     @BeforeEach
@@ -52,7 +57,7 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("Debe responder 201 Created cuando los datos de entrada son válidos")
+    @DisplayName("Debe responder 201 Created cuando los datos de entrada para Owner son válidos")
     void createOwner_WhenValidData_ShouldReturn201Created() throws Exception {
         mockMvc.perform(post("/users/owner")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -60,6 +65,45 @@ class UserControllerTest {
                 .andExpect(status().isCreated());
 
         verify(userHandler).createOwner(any(UserRequestDto.class));
+    }
+
+    @Test
+    @DisplayName("Debe responder 201 Created cuando el Propietario crea un Empleado con Token válido")
+    void createEmployee_WhenAuthorizedOwner_ShouldReturn201Created() throws Exception {
+        when(jwtAdapter.extractRole("Bearer token-owner-valido")).thenReturn("ROLE_OWNER");
+
+        mockMvc.perform(post("/users/employee")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer token-owner-valido")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validDto)))
+                .andExpect(status().isCreated());
+
+        verify(userHandler).createEmployee(any(UserRequestDto.class));
+    }
+
+    @Test
+    @DisplayName("Debe responder 403 Forbidden cuando se intenta crear un Empleado sin encabezado Authorization")
+    void createEmployee_WhenNoToken_ShouldReturn403Forbidden() throws Exception {
+        mockMvc.perform(post("/users/employee")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validDto)))
+                .andExpect(status().isForbidden());
+
+        verify(userHandler, never()).createEmployee(any());
+    }
+
+    @Test
+    @DisplayName("Debe responder 403 Forbidden cuando el rol no es ROLE_OWNER")
+    void createEmployee_WhenRoleIsNotOwner_ShouldReturn403Forbidden() throws Exception {
+        when(jwtAdapter.extractRole("Bearer token-cliente")).thenReturn("ROLE_CLIENT");
+
+        mockMvc.perform(post("/users/employee")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer token-cliente")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validDto)))
+                .andExpect(status().isForbidden());
+
+        verify(userHandler, never()).createEmployee(any());
     }
 
     @Test

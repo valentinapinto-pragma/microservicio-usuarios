@@ -7,12 +7,15 @@ import com.example.users.domain.model.User;
 import com.example.users.domain.repositoryPort.PasswordEncoderPort;
 import com.example.users.domain.repositoryPort.UserPersistentPort;
 import com.example.users.domain.servicePort.UserServicePort;
+
 import java.time.LocalDate;
 import java.time.Period;
 
 public class UserUseCase implements UserServicePort {
-    // identificador 1=Admin, 2=Propietario, 3=Empleado, 4=Cliente
+
+    // Identificadores de Roles: 1=Admin, 2=Propietario, 3=Empleado, 4=Cliente
     private static final Long OWNER_ROLE_ID = 2L;
+    private static final Long EMPLOYEE_ROLE_ID = 3L;
 
     private final UserPersistentPort userPersistentPort;
     private final PasswordEncoderPort passwordEncoderPort;
@@ -24,9 +27,7 @@ public class UserUseCase implements UserServicePort {
 
     @Override
     public void createOwner(User user) {
-
         validateAge(user.getBirthDate());
-
         user.setPassword(passwordEncoderPort.encode(user.getPassword()));
 
         Role role = new Role();
@@ -35,6 +36,19 @@ public class UserUseCase implements UserServicePort {
 
         userPersistentPort.save(user);
     }
+
+    @Override
+    public void createEmployee(User user) {
+        validateAge(user.getBirthDate());
+        user.setPassword(passwordEncoderPort.encode(user.getPassword()));
+
+        Role role = new Role();
+        role.setId(EMPLOYEE_ROLE_ID);
+        user.setRole(role);
+
+        userPersistentPort.save(user);
+    }
+
     private void validateAge(LocalDate birthDate) {
         if (birthDate == null || Period.between(birthDate, LocalDate.now()).getYears() < 18) {
             throw new UserUnderAgeException();
@@ -46,6 +60,4 @@ public class UserUseCase implements UserServicePort {
         return userPersistentPort.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
     }
-
-
 }

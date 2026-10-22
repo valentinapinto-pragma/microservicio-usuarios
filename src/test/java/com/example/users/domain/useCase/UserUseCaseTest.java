@@ -52,14 +52,11 @@ class UserUseCaseTest {
     @Test
     @DisplayName("Debe crear el propietario exitosamente cuando es mayor de edad")
     void createOwner_WhenUserIsMajor_ShouldCreateSuccessfully() {
-        // Arrange (Preparar datos: 25 años)
         user.setBirthDate(LocalDate.now().minusYears(25));
         when(passwordEncoderPort.encode("ClavePlana123")).thenReturn("$2a$10$ClaveEncriptadaFake");
 
-        // Act (Ejecutar)
         userUseCase.createOwner(user);
 
-        // Assert (Verificar resultados)
         verify(passwordEncoderPort).encode("ClavePlana123");
         verify(userPersistentPort).save(user);
         assertEquals("$2a$10$ClaveEncriptadaFake", user.getPassword());
@@ -68,15 +65,38 @@ class UserUseCaseTest {
     }
 
     @Test
-    @DisplayName("Debe lanzar excepción cuando el usuario es menor de edad")
+    @DisplayName("Debe crear el empleado exitosamente con rol 3 cuando es mayor de edad")
+    void createEmployee_WhenUserIsMajor_ShouldCreateSuccessfullyWithEmployeeRole() {
+        user.setBirthDate(LocalDate.now().minusYears(20));
+        when(passwordEncoderPort.encode("ClavePlana123")).thenReturn("$2a$10$ClaveEncriptadaFake");
+
+        userUseCase.createEmployee(user);
+
+        verify(passwordEncoderPort).encode("ClavePlana123");
+        verify(userPersistentPort).save(user);
+        assertEquals("$2a$10$ClaveEncriptadaFake", user.getPassword());
+        assertNotNull(user.getRole());
+        assertEquals(3L, user.getRole().getId());
+    }
+
+    @Test
+    @DisplayName("Debe lanzar excepción cuando el empleado es menor de edad")
+    void createEmployee_WhenUserIsUnderAge_ShouldThrowException() {
+        user.setBirthDate(LocalDate.now().minusYears(16));
+
+        assertThrows(UserUnderAgeException.class, () -> userUseCase.createEmployee(user));
+
+        verify(userPersistentPort, never()).save(any());
+        verify(passwordEncoderPort, never()).encode(any());
+    }
+
+    @Test
+    @DisplayName("Debe lanzar excepción cuando el propietario es menor de edad")
     void createOwner_WhenUserIsUnderAge_ShouldThrowException() {
-        // Arrange (Preparar datos: 15 años)
         user.setBirthDate(LocalDate.now().minusYears(15));
 
-        // Act & Assert (Verificar que lance la excepción)
         assertThrows(UserUnderAgeException.class, () -> userUseCase.createOwner(user));
 
-        // Verificar que NUNCA intentó guardar en la base de datos
         verify(userPersistentPort, never()).save(any());
         verify(passwordEncoderPort, never()).encode(any());
     }
@@ -84,19 +104,17 @@ class UserUseCaseTest {
     @Test
     @DisplayName("Debe lanzar excepción cuando la fecha de nacimiento es nula")
     void createOwner_WhenBirthDateIsNull_ShouldThrowException() {
-        // Arrange
         user.setBirthDate(null);
 
-        // Act & Assert
         assertThrows(UserUnderAgeException.class, () -> userUseCase.createOwner(user));
         verify(userPersistentPort, never()).save(any());
     }
+
     @Test
     @DisplayName("Debe lanzar UserNotFoundException cuando el id no existe")
     void getUserById_WhenUserDoesNotExist_ShouldThrowException() {
-        // Arrange
         when(userPersistentPort.findById(99L)).thenReturn(Optional.empty());
-        // Act & Assert
+
         assertThrows(UserNotFoundException.class, () -> userUseCase.getUserById(99L));
         verify(userPersistentPort).findById(99L);
     }
