@@ -64,6 +64,17 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @Operation(summary = "Crear nuevo usuario con rol Cliente (Registro público)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Cliente creado exitosamente"),
+            @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos o usuario menor de edad")
+    })
+    @PostMapping("/client")
+    public ResponseEntity<Void> createClient(@Valid @RequestBody UserRequestDto userRequestDto) {
+        userHandler.createClient(userRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
     @Operation(summary = "Obtener usuario por ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuario encontrado"),

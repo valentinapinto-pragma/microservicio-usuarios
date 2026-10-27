@@ -146,6 +146,31 @@ class UserControllerTest {
     }
 
     @Test
+    @DisplayName("Debe responder 201 Created cuando los datos de entrada para Cliente son válidos sin requerir token")
+    void createClient_WhenValidData_ShouldReturn201Created() throws Exception {
+        mockMvc.perform(post("/users/client")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validDto)))
+                .andExpect(status().isCreated());
+
+        verify(userHandler).createClient(any(UserRequestDto.class));
+    }
+
+    @Test
+    @DisplayName("Debe responder 400 Bad Request cuando faltan campos obligatorios para Cliente")
+    void createClient_WhenMissingFields_ShouldReturn400BadRequest() throws Exception {
+        validDto.setEmail(null);
+
+        mockMvc.perform(post("/users/client")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validDto)))
+                .andExpect(status().isBadRequest());
+
+        verify(userHandler, never()).createClient(any());
+    }
+
+
+    @Test
     @DisplayName("Debe responder 200 OK con UserResponseDto cuando se consulta por ID")
     void getUserById_WhenUserExists_ShouldReturn200Ok() throws Exception {
         UserResponseDto responseDto = new UserResponseDto();
