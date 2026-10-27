@@ -27,6 +27,12 @@ public class UserHandler {
         userServicePort.createEmployee(user);
     }
 
+    public void createClient(UserRequestDto userRequestDto) {
+        User user = userDtoMapper.toUser(userRequestDto);
+        userServicePort.createClient(user);
+    }
+
+
     public UserResponseDto getUserById(Long id) {
         return userDtoMapper.toResponseDto(userServicePort.getUserById(id));
     }

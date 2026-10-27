@@ -68,6 +68,29 @@ class UserHandlerTest {
     }
 
     @Test
+    @DisplayName("Debe mapear el DTO a Modelo y llamar a createClient en el puerto de servicio")
+    void createClient_ShouldMapDtoAndCallServicePort() {
+        // Arrange
+        UserRequestDto requestDto = new UserRequestDto();
+        requestDto.setName("Laura");
+        requestDto.setEmail("laura.cliente@correo.com");
+
+        User user = new User();
+        user.setName("Laura");
+        user.setEmail("laura.cliente@correo.com");
+
+        when(userDtoMapper.toUser(requestDto)).thenReturn(user);
+
+        // Act
+        userHandler.createClient(requestDto);
+
+        // Assert
+        verify(userDtoMapper).toUser(requestDto);
+        verify(userServicePort).createClient(user);
+    }
+
+
+    @Test
     @DisplayName("Debe consultar el usuario por id y mapearlo a UserResponseDto")
     void getUserById_ShouldCallServicePortAndReturnResponseDto() {
         Long userId = 1L;
