@@ -80,6 +80,40 @@ class UserUseCaseTest {
     }
 
     @Test
+    @DisplayName("Debe encriptar la clave, asignar el rol 4 de cliente y guardar el usuario")
+    void createClient_WhenValidUser_ShouldEncodePasswordAssignRoleAndSave() {
+        // Arrange
+        User user = new User();
+        user.setPassword("rawPassword");
+        user.setBirthDate(LocalDate.now().minusYears(20));
+        when(passwordEncoderPort.encode("rawPassword")).thenReturn("encodedPassword");
+
+        // Act
+        userUseCase.createClient(user);
+
+        // Assert
+        assertEquals("encodedPassword", user.getPassword());
+        assertNotNull(user.getRole());
+        assertEquals(4L, user.getRole().getId());
+        verify(passwordEncoderPort).encode("rawPassword");
+        verify(userPersistentPort).save(user);
+    }
+
+    @Test
+    @DisplayName("Debe lanzar UserUnderAgeException cuando el cliente es menor de 18 años")
+    void createClient_WhenUnderAge_ShouldThrowUserUnderAgeException() {
+        // Arrange
+        User user = new User();
+        user.setPassword("rawPassword");
+        user.setBirthDate(LocalDate.now().minusYears(15)); // Menor de 18 años
+
+        // Act & Assert
+        assertThrows(UserUnderAgeException.class, () -> userUseCase.createClient(user));
+        verify(userPersistentPort, never()).save(any());
+    }
+
+
+    @Test
     @DisplayName("Debe lanzar excepción cuando el empleado es menor de edad")
     void createEmployee_WhenUserIsUnderAge_ShouldThrowException() {
         user.setBirthDate(LocalDate.now().minusYears(16));

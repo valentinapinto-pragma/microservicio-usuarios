@@ -16,6 +16,7 @@ public class UserUseCase implements UserServicePort {
     // Identificadores de Roles: 1=Admin, 2=Propietario, 3=Empleado, 4=Cliente
     private static final Long OWNER_ROLE_ID = 2L;
     private static final Long EMPLOYEE_ROLE_ID = 3L;
+    private static final Long CLIENT_ROLE_ID = 4L;
 
     private final UserPersistentPort userPersistentPort;
     private final PasswordEncoderPort passwordEncoderPort;
@@ -46,6 +47,15 @@ public class UserUseCase implements UserServicePort {
         role.setId(EMPLOYEE_ROLE_ID);
         user.setRole(role);
 
+        userPersistentPort.save(user);
+    }
+    @Override
+    public void createClient(User user) {
+        validateAge(user.getBirthDate());
+        user.setPassword(passwordEncoderPort.encode(user.getPassword()));
+        Role role = new Role();
+        role.setId(CLIENT_ROLE_ID);
+        user.setRole(role);
         userPersistentPort.save(user);
     }
 
