@@ -3,6 +3,7 @@ package com.example.users.domain.useCase;
 import com.example.users.domain.exception.UserNotFoundException;
 import com.example.users.domain.exception.UserUnderAgeException;
 import com.example.users.domain.model.Role;
+import com.example.users.domain.model.RoleEnum;
 import com.example.users.domain.model.User;
 import com.example.users.domain.repositoryPort.PasswordEncoderPort;
 import com.example.users.domain.repositoryPort.UserPersistentPort;
@@ -12,11 +13,6 @@ import java.time.LocalDate;
 import java.time.Period;
 
 public class UserUseCase implements UserServicePort {
-
-    // Identificadores de Roles: 1=Admin, 2=Propietario, 3=Empleado, 4=Cliente
-    private static final Long OWNER_ROLE_ID = 2L;
-    private static final Long EMPLOYEE_ROLE_ID = 3L;
-    private static final Long CLIENT_ROLE_ID = 4L;
 
     private final UserPersistentPort userPersistentPort;
     private final PasswordEncoderPort passwordEncoderPort;
@@ -32,7 +28,7 @@ public class UserUseCase implements UserServicePort {
         user.setPassword(passwordEncoderPort.encode(user.getPassword()));
 
         Role role = new Role();
-        role.setId(OWNER_ROLE_ID);
+        role.setId(RoleEnum.OWNER.getId());
         user.setRole(role);
 
         userPersistentPort.save(user);
@@ -44,18 +40,21 @@ public class UserUseCase implements UserServicePort {
         user.setPassword(passwordEncoderPort.encode(user.getPassword()));
 
         Role role = new Role();
-        role.setId(EMPLOYEE_ROLE_ID);
+        role.setId(RoleEnum.EMPLOYEE.getId());
         user.setRole(role);
 
         userPersistentPort.save(user);
     }
+
     @Override
     public void createClient(User user) {
         validateAge(user.getBirthDate());
         user.setPassword(passwordEncoderPort.encode(user.getPassword()));
+
         Role role = new Role();
-        role.setId(CLIENT_ROLE_ID);
+        role.setId(RoleEnum.CLIENT.getId());
         user.setRole(role);
+
         userPersistentPort.save(user);
     }
 

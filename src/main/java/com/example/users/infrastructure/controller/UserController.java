@@ -3,6 +3,7 @@ package com.example.users.infrastructure.controller;
 import com.example.users.application.dto.request.UserRequestDto;
 import com.example.users.application.dto.response.UserResponseDto;
 import com.example.users.application.handler.UserHandler;
+import com.example.users.domain.model.RoleEnum;
 import com.example.users.infrastructure.security.JwtAdapter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -19,8 +20,6 @@ import javax.validation.Valid;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
-
-    private static final String ROLE_OWNER = "ROLE_OWNER";
 
     private final UserHandler userHandler;
     private final JwtAdapter jwtAdapter;
@@ -53,7 +52,7 @@ public class UserController {
 
         try {
             String role = jwtAdapter.extractRole(authHeader);
-            if (!ROLE_OWNER.equals(role)) {
+            if (!RoleEnum.OWNER.getRoleName().equals(role)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
         } catch (Exception e) {
