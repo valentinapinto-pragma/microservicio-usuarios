@@ -3,6 +3,7 @@ package com.example.users.infrastructure.security;
 import com.example.users.domain.model.User;
 import com.example.users.domain.repositoryPort.TokenServicePort;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,7 +34,7 @@ public class JwtAdapter implements TokenServicePort {
         claims.put("id", user.getId());
         claims.put("role", user.getRole() != null ? user.getRole().getName() : "");
 
-        Key key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        Key key = getSigningKey();
         long currentTimeMillis = System.currentTimeMillis();
 
         return Jwts.builder()
@@ -46,15 +47,38 @@ public class JwtAdapter implements TokenServicePort {
     }
 
     public String extractRole(String token) {
+        return extractAllClaims(token).get("role", String.class);
+    }
+
+    public String extractUsername(String token) {
+        return extractAllClaims(token).getSubject();
+    }
+
+    public Long extractUserId(String token) {
+        return extractAllClaims(token).get("id", Long.class);
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Claims claims = extractAllClaims(token);
+            return claims.getExpiration() != null && !claims.getExpiration().before(new Date());
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    private Claims extractAllClaims(String token) {
         if (token != null && token.startsWith("Bearer ")) {
             token = token.substring(7);
         }
-        Key key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        return claims.get("role", String.class);
+    }
+
+    private Key getSigningKey() {
+        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 }

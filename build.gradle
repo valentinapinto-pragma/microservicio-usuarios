@@ -29,8 +29,8 @@ dependencies {
 	runtimeOnly 'mysql:mysql-connector-java:8.0.32'
 	//runtimeOnly 'com.h2database:h2'//http://localhost:8080/h2-console
 
-	// Encriptacion para la contrasena (BCrypt)
-	implementation 'org.springframework.security:spring-security-crypto'
+	// Spring Security y Encriptacion
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 
 	// JWT (JSON Web Token)
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
@@ -53,6 +53,7 @@ dependencies {
 
 	// Pruebas
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
 }
 
 
