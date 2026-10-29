@@ -3,15 +3,13 @@ package com.example.users.infrastructure.controller;
 import com.example.users.application.dto.request.UserRequestDto;
 import com.example.users.application.dto.response.UserResponseDto;
 import com.example.users.application.handler.UserHandler;
-import com.example.users.domain.model.RoleEnum;
-import com.example.users.infrastructure.security.JwtAdapter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -22,7 +20,6 @@ import javax.validation.Valid;
 public class UserController {
 
     private final UserHandler userHandler;
-    private final JwtAdapter jwtAdapter;
 
     @Operation(summary = "Crear nuevo usuario con rol Propietario")
     @ApiResponses(value = {
@@ -42,23 +39,8 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "No autorizado: solo un propietario puede crear empleados")
     })
     @PostMapping("/employee")
-    public ResponseEntity<Void> createEmployee(
-            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader,
-            @Valid @RequestBody UserRequestDto userRequestDto) {
-
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
-        try {
-            String role = jwtAdapter.extractRole(authHeader);
-            if (!RoleEnum.OWNER.getRoleName().equals(role)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<Void> createEmployee(@Valid @RequestBody UserRequestDto userRequestDto) {
         userHandler.createEmployee(userRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

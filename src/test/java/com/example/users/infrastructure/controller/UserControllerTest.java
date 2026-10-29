@@ -4,7 +4,9 @@ import com.example.users.application.dto.request.UserRequestDto;
 import com.example.users.application.dto.response.UserResponseDto;
 import com.example.users.application.handler.UserHandler;
 import com.example.users.domain.exception.UserNotFoundException;
+import com.example.users.infrastructure.exceptionhandler.ControllerAdvisor;
 import com.example.users.infrastructure.security.JwtAdapter;
+import com.example.users.infrastructure.security.SecurityConfiguration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,8 +14,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpHeaders;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -28,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserController.class)
+@Import({SecurityConfiguration.class, ControllerAdvisor.class})
 class UserControllerTest {
 
     @Autowired
@@ -68,12 +72,10 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("Debe responder 201 Created cuando el Propietario crea un Empleado con Token válido")
+    @WithMockUser(roles = "OWNER")
+    @DisplayName("Debe responder 201 Created cuando el Propietario crea un Empleado")
     void createEmployee_WhenAuthorizedOwner_ShouldReturn201Created() throws Exception {
-        when(jwtAdapter.extractRole("Bearer token-owner-valido")).thenReturn("ROLE_OWNER");
-
         mockMvc.perform(post("/users/employee")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer token-owner-valido")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validDto)))
                 .andExpect(status().isCreated());
@@ -82,7 +84,7 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("Debe responder 403 Forbidden cuando se intenta crear un Empleado sin encabezado Authorization")
+    @DisplayName("Debe responder 403 Forbidden cuando se intenta crear un Empleado sin autenticación")
     void createEmployee_WhenNoToken_ShouldReturn403Forbidden() throws Exception {
         mockMvc.perform(post("/users/employee")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -93,12 +95,10 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("Debe responder 403 Forbidden cuando el rol no es ROLE_OWNER")
+    @WithMockUser(roles = "CLIENT")
+    @DisplayName("Debe responder 403 Forbidden cuando el rol no es OWNER")
     void createEmployee_WhenRoleIsNotOwner_ShouldReturn403Forbidden() throws Exception {
-        when(jwtAdapter.extractRole("Bearer token-cliente")).thenReturn("ROLE_CLIENT");
-
         mockMvc.perform(post("/users/employee")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer token-cliente")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validDto)))
                 .andExpect(status().isForbidden());
@@ -168,7 +168,6 @@ class UserControllerTest {
 
         verify(userHandler, never()).createClient(any());
     }
-
 
     @Test
     @DisplayName("Debe responder 200 OK con UserResponseDto cuando se consulta por ID")
