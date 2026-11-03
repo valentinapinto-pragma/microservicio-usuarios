@@ -39,7 +39,6 @@ public class SecurityConfiguration {
                 .antMatchers(
                         "/auth/**",
                         "/users/client",
-                        "/users/owner",
                         "/users/{id}",
                         "/swagger-ui/**",
                         "/swagger-ui.html",

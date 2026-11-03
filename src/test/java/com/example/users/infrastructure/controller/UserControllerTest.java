@@ -61,6 +61,7 @@ class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     @DisplayName("Debe responder 201 Created cuando los datos de entrada para Owner son válidos")
     void createOwner_WhenValidData_ShouldReturn201Created() throws Exception {
         mockMvc.perform(post("/users/owner")

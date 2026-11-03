@@ -27,6 +27,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos")
     })
     @PostMapping("/owner")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> createOwner(@Valid @RequestBody UserRequestDto userRequestDto) {
         userHandler.createOwner(userRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
