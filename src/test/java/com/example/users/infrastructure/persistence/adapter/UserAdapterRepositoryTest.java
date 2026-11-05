@@ -120,20 +120,6 @@ class UserAdapterRepositoryTest {
     }
 
     @Test
-    @DisplayName("Debe actualizar un usuario mapeando a entidad y guardando")
-    void update_ShouldSaveEntityViaRepository() {
-        // Arrange
-        when(mapperUserEntity.toEntity(user)).thenReturn(userEntity);
-
-        // Act
-        userAdapterRepository.update(user);
-
-        // Assert
-        verify(mapperUserEntity).toEntity(user);
-        verify(userRepository).save(userEntity);
-    }
-
-    @Test
     @DisplayName("Debe eliminar un usuario mapeando a entidad y llamando a delete")
     void delete_ShouldDeleteEntityViaRepository() {
         // Arrange

@@ -39,11 +39,6 @@ public class UserAdapterRepository implements UserPersistentPort {
     }
 
     @Override
-    public void update(User entity) {
-        userRepository.save(mapperUserEntity.toEntity(entity));
-    }
-
-    @Override
     public void delete(User entity) {
         userRepository.delete(mapperUserEntity.toEntity(entity));
     }
